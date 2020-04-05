@@ -15,7 +15,8 @@ namespace Library
 
         private int _mResource;
 
-        private static readonly ScaleType[] SScaleTypeArray = {
+        private static readonly ScaleType[] SScaleTypeArray =
+        {
             ScaleType.Matrix,
             ScaleType.FitXy,
             ScaleType.FitStart,
@@ -38,7 +39,7 @@ namespace Library
 
         private bool _isOval;
         private Drawable _mDrawable;
-        private float[] _mRadii = new float[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        private float[] _mRadii = new float[] {0, 0, 0, 0, 0, 0, 0, 0};
 
         public SelectableRoundedImageView(Context context) : base(context)
         {
@@ -69,11 +70,13 @@ namespace Library
                 throw new IllegalArgumentException("radius values cannot be negative.");
             }
 
-            _mRadii = new float[] {
+            _mRadii = new float[]
+            {
                 _leftTopCornerRadius, _leftTopCornerRadius,
                 rightTopCornerRadius, rightTopCornerRadius,
                 mRightBottomCornerRadius, mRightBottomCornerRadius,
-                mLeftBottomCornerRadius, mLeftBottomCornerRadius };
+                mLeftBottomCornerRadius, mLeftBottomCornerRadius
+            };
 
             _mBorderWidth = a.GetDimensionPixelSize(Resource.Styleable.SelectableRoundedImageView_sriv_border_width, 0);
             if (_mBorderWidth < 0)
@@ -140,13 +143,11 @@ namespace Library
             }
         }
 
-#if AK
         public override void SetImageURI(Uri uri)
         {
             base.SetImageURI(uri);
             SetImageDrawable(Drawable);
-    }
-#endif
+        }
 
         private Drawable ResolveResource()
         {
@@ -171,6 +172,7 @@ namespace Library
                     _mResource = 0;
                 }
             }
+
             return SelectableRoundedCornerDrawable.FromDrawable(d, Resources);
         }
 
@@ -181,11 +183,11 @@ namespace Library
                 return;
             }
 
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetScaleType(_mScaleType);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetCornerRadii(_mRadii);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderWidth(_mBorderWidth);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderColor(_mBorderColor);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetOval(_isOval);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetScaleType(_mScaleType);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetCornerRadii(_mRadii);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderWidth(_mBorderWidth);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderColor(_mBorderColor);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetOval(_isOval);
         }
 
         public float GetCornerRadius()
@@ -211,7 +213,7 @@ namespace Library
             var lb = leftBottom * density;
             var rb = rightBottom * density;
 
-            _mRadii = new float[] { lt, lt, rt, rt, rb, rb, lb, lb };
+            _mRadii = new float[] {lt, lt, rt, rt, rb, rb, lb, lb};
             UpdateDrawable();
         }
 
@@ -261,8 +263,10 @@ namespace Library
                 return;
             }
 
-            _mBorderColor = (colors != null) ? colors : ColorStateList
-                .ValueOf(DefaultBorderColor);
+            _mBorderColor = (colors != null)
+                ? colors
+                : ColorStateList
+                    .ValueOf(DefaultBorderColor);
             UpdateDrawable();
             if (_mBorderWidth > 0)
             {

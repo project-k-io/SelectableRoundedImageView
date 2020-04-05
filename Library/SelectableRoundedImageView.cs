@@ -9,7 +9,7 @@ using Java.Lang;
 
 namespace Library
 {
-    public class SelectableRoundedImageView : ImageView
+    public sealed class SelectableRoundedImageView : ImageView
     {
         public static string TAG = "SelectableRoundedImageView";
 
@@ -45,7 +45,7 @@ namespace Library
         {
         }
 
-        public SelectableRoundedImageView(Context context, IAttributeSet attrs) : base(context, attrs, 0)
+        public SelectableRoundedImageView(Context context, IAttributeSet attrs) : this(context, attrs, 0)
         {
         }
 

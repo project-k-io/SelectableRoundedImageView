@@ -39,7 +39,7 @@ namespace Library
 
         private bool _isOval;
         private Drawable _mDrawable;
-        private float[] _mRadii = new float[] {0, 0, 0, 0, 0, 0, 0, 0};
+        private float[] _mRadii = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
         public SelectableRoundedImageView(Context context) : base(context)
         {
@@ -183,11 +183,11 @@ namespace Library
                 return;
             }
 
-            ((SelectableRoundedCornerDrawable) _mDrawable).SetScaleType(_mScaleType);
-            ((SelectableRoundedCornerDrawable) _mDrawable).SetCornerRadii(_mRadii);
-            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderWidth(_mBorderWidth);
-            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderColor(_mBorderColor);
-            ((SelectableRoundedCornerDrawable) _mDrawable).SetOval(_isOval);
+            ((SelectableRoundedCornerDrawable)_mDrawable).SetScaleType(_mScaleType);
+            ((SelectableRoundedCornerDrawable)_mDrawable).SetCornerRadii(_mRadii);
+            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderWidth(_mBorderWidth);
+            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderColor(_mBorderColor);
+            ((SelectableRoundedCornerDrawable)_mDrawable).SetOval(_isOval);
         }
 
         public float GetCornerRadius()
@@ -213,7 +213,7 @@ namespace Library
             var lb = leftBottom * density;
             var rb = rightBottom * density;
 
-            _mRadii = new float[] {lt, lt, rt, rt, rb, rb, lb, lb};
+            _mRadii = new float[] { lt, lt, rt, rt, rb, rb, lb, lb };
             UpdateDrawable();
         }
 

@@ -22,11 +22,11 @@ namespace Library
 
         private readonly Paint _bitmapPaint;
         private readonly Paint _borderPaint;
-        
+
         private readonly BitmapShader _bitmapShader;
 
-        private readonly float[] _radii = new float[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        private readonly float[] _borderRadii = new float[] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        private readonly float[] _radii = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        private readonly float[] _borderRadii = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
         private bool _oval;
 
@@ -57,11 +57,11 @@ namespace Library
 
             _bitmapRect.Set(0, 0, _bitmapWidth, _bitmapHeight);
 
-            _bitmapPaint = new Paint {AntiAlias = true};
+            _bitmapPaint = new Paint { AntiAlias = true };
             _bitmapPaint.SetStyle(Paint.Style.Fill);
             _bitmapPaint.SetShader(_bitmapShader);
 
-            _borderPaint = new Paint {AntiAlias = true};
+            _borderPaint = new Paint { AntiAlias = true };
             _borderPaint.SetStyle(Paint.Style.Stroke);
             _borderPaint.Color = new Color(_borderColor.GetColorForState(GetState(), DefaultBorderColor));
             _borderPaint.StrokeWidth = _borderWidth;
@@ -76,11 +76,13 @@ namespace Library
         {
             if (drawable == null) return null;
 
-            if (drawable is SelectableRoundedCornerDrawable) {
+            if (drawable is SelectableRoundedCornerDrawable)
+            {
                 return drawable;
             }
 
-            if (drawable is LayerDrawable ld) {
+            if (drawable is LayerDrawable ld)
+            {
                 var num = ld.NumberOfLayers;
                 for (var i = 0; i < num; i++)
                 {
@@ -107,7 +109,8 @@ namespace Library
                 return null;
             }
 
-            if (drawable is BitmapDrawable bitmapDrawable) {
+            if (drawable is BitmapDrawable bitmapDrawable)
+            {
                 return bitmapDrawable.Bitmap;
             }
 
@@ -171,9 +174,9 @@ namespace Library
                 _bitmapShader.SetLocalMatrix(m);
                 _bounds.Set(clipBounds);
             }
-            else if (ImageView.ScaleType.FitStart == _scaleType || 
-                     ImageView.ScaleType.FitEnd == _scaleType || 
-                     ImageView.ScaleType.FitCenter == _scaleType || 
+            else if (ImageView.ScaleType.FitStart == _scaleType ||
+                     ImageView.ScaleType.FitEnd == _scaleType ||
+                     ImageView.ScaleType.FitCenter == _scaleType ||
                      ImageView.ScaleType.CenterInside == _scaleType)
             {
                 ApplyScaleToRadii(canvasMatrix);
@@ -214,21 +217,21 @@ namespace Library
 
             canvas.Scale(newScaleX, newScaleY);
 
-            if (ImageView.ScaleType.FitStart == _scaleType || 
-                ImageView.ScaleType.FitEnd == _scaleType || 
-                ImageView.ScaleType.FitXy == _scaleType || 
-                ImageView.ScaleType.FitCenter == _scaleType || 
-                ImageView.ScaleType.CenterInside == _scaleType || 
+            if (ImageView.ScaleType.FitStart == _scaleType ||
+                ImageView.ScaleType.FitEnd == _scaleType ||
+                ImageView.ScaleType.FitXy == _scaleType ||
+                ImageView.ScaleType.FitCenter == _scaleType ||
+                ImageView.ScaleType.CenterInside == _scaleType ||
                 ImageView.ScaleType.Matrix == _scaleType)
             {
                 canvas.Translate(_borderWidth, _borderWidth);
             }
-            else if (ImageView.ScaleType.Center == _scaleType || 
+            else if (ImageView.ScaleType.Center == _scaleType ||
                      ImageView.ScaleType.CenterCrop == _scaleType)
             {
                 // First, make translate values to 0
                 canvas.Translate(-translateX / (newScaleX * scaleFactorX), -translateY / (newScaleY * scaleFactorY));
-                
+
                 // Then, set the final translate values.
                 canvas.Translate(-(_bounds.Left - _borderWidth), -(_bounds.Top - _borderWidth));
             }
@@ -356,11 +359,11 @@ namespace Library
             InvalidateSelf();
         }
 
-        
+
         public override int IntrinsicWidth => _bitmapWidth;
 
         public override int IntrinsicHeight => _bitmapHeight;
-        
+
 
         public float GetBorderWidth()
         {

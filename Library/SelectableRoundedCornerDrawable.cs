@@ -9,10 +9,14 @@ namespace Library
 {
     public sealed class SelectableRoundedCornerDrawable : Drawable
     {
+        #region Static Fields
 
         private static readonly string Tag = "SelectableRoundedCornerDrawable";
         private static readonly Color DefaultBorderColor = Color.Black;
 
+        #endregion
+
+        #region Fields
         private readonly RectF _bounds = new RectF();
         private readonly RectF _borderBounds = new RectF();
 
@@ -40,101 +44,11 @@ namespace Library
         private readonly Bitmap _bitmap;
         private bool _boundsConfigured;
 
-        public SelectableRoundedCornerDrawable(Bitmap bitmap, Resources r)
-        {
-            _bitmap = bitmap;
-            _bitmapShader = new BitmapShader(bitmap, Shader.TileMode.Clamp, Shader.TileMode.Clamp);
+        #endregion
 
-            if (bitmap != null)
-            {
-                _bitmapWidth = bitmap.GetScaledWidth(r.DisplayMetrics);
-                _bitmapHeight = bitmap.GetScaledHeight(r.DisplayMetrics);
-            }
-            else
-            {
-                _bitmapWidth = _bitmapHeight = -1;
-            }
-
-            _bitmapRect.Set(0, 0, _bitmapWidth, _bitmapHeight);
-
-            _bitmapPaint = new Paint { AntiAlias = true };
-            _bitmapPaint.SetStyle(Paint.Style.Fill);
-            _bitmapPaint.SetShader(_bitmapShader);
-
-            _borderPaint = new Paint { AntiAlias = true };
-            _borderPaint.SetStyle(Paint.Style.Stroke);
-            _borderPaint.Color = new Color(_borderColor.GetColorForState(GetState(), DefaultBorderColor));
-            _borderPaint.StrokeWidth = _borderWidth;
-        }
-
-        public static SelectableRoundedCornerDrawable FromBitmap(Bitmap bitmap, Resources r)
-        {
-            return bitmap != null ? new SelectableRoundedCornerDrawable(bitmap, r) : null;
-        }
-
-        public static Drawable FromDrawable(Drawable drawable, Resources r)
-        {
-            if (drawable == null) return null;
-
-            if (drawable is SelectableRoundedCornerDrawable)
-            {
-                return drawable;
-            }
-
-            if (drawable is LayerDrawable ld)
-            {
-                var num = ld.NumberOfLayers;
-                for (var i = 0; i < num; i++)
-                {
-                    var d = ld.GetDrawable(i);
-                    ld.SetDrawableByLayerId(ld.GetId(i), FromDrawable(d, r));
-                }
-                return ld;
-            }
-
-            var bm = DrawableToBitmap(drawable);
-            if (bm != null)
-            {
-                return new SelectableRoundedCornerDrawable(bm, r);
-            }
-
-            Log.Warn(Tag, "Failed to create bitmap from drawable!");
-            return drawable;
-        }
-
-        public static Bitmap DrawableToBitmap(Drawable drawable)
-        {
-            if (drawable == null)
-            {
-                return null;
-            }
-
-            if (drawable is BitmapDrawable bitmapDrawable)
-            {
-                return bitmapDrawable.Bitmap;
-            }
-
-            Bitmap bitmap;
-            var width = Math.Max(drawable.IntrinsicWidth, 2);
-            var height = Math.Max(drawable.IntrinsicHeight, 2);
-            try
-            {
-                bitmap = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
-                var canvas = new Canvas(bitmap);
-                drawable.SetBounds(0, 0, canvas.Width, canvas.Height);
-                drawable.Draw(canvas);
-            }
-            catch (IllegalArgumentException e)
-            {
-                e.PrintStackTrace();
-                bitmap = null;
-            }
-            return bitmap;
-        }
+        #region Overrides
 
         public override bool IsStateful => _borderColor.IsStateful;
-
-
         protected override bool OnStateChange(int[] state)
         {
             var newColor = _borderColor.GetColorForState(state, new Color(0));
@@ -148,123 +62,6 @@ namespace Library
                 return base.OnStateChange(state);
             }
         }
-
-        private void ConfigureBounds(Canvas canvas)
-        {
-            // I have discovered a truly marvelous explanation of this,
-            // which this comment space is too narrow to contain. :)
-            // If you want to understand what's going on here,
-            // See http://www.joooooooooonhokim.com/?p=289
-            var clipBounds = canvas.ClipBounds;
-            var canvasMatrix = canvas.Matrix;
-
-            if (ImageView.ScaleType.Center == _scaleType)
-            {
-                _bounds.Set(clipBounds);
-            }
-            else if (ImageView.ScaleType.CenterCrop == _scaleType)
-            {
-                ApplyScaleToRadii(canvasMatrix);
-                _bounds.Set(clipBounds);
-            }
-            else if (ImageView.ScaleType.FitXy == _scaleType)
-            {
-                var m = new Matrix();
-                m.SetRectToRect(_bitmapRect, new RectF(clipBounds), Matrix.ScaleToFit.Fill);
-                _bitmapShader.SetLocalMatrix(m);
-                _bounds.Set(clipBounds);
-            }
-            else if (ImageView.ScaleType.FitStart == _scaleType ||
-                     ImageView.ScaleType.FitEnd == _scaleType ||
-                     ImageView.ScaleType.FitCenter == _scaleType ||
-                     ImageView.ScaleType.CenterInside == _scaleType)
-            {
-                ApplyScaleToRadii(canvasMatrix);
-                _bounds.Set(_bitmapRect);
-            }
-            else if (ImageView.ScaleType.Matrix == _scaleType)
-            {
-                ApplyScaleToRadii(canvasMatrix);
-                _bounds.Set(_bitmapRect);
-            }
-        }
-
-        private void ApplyScaleToRadii(Matrix m)
-        {
-            var values = new float[9];
-            m.GetValues(values);
-            for (var i = 0; i < _radii.Length; i++)
-            {
-                _radii[i] = _radii[i] / values[0];
-            }
-        }
-
-        private void AdjustCanvasForBorder(Canvas canvas)
-        {
-            var canvasMatrix = canvas.Matrix;
-            var values = new float[9];
-            canvasMatrix.GetValues(values);
-
-            var scaleFactorX = values[0];
-            var scaleFactorY = values[4];
-            var translateX = values[2];
-            var translateY = values[5];
-
-            var newScaleX = _bounds.Width()
-                            / (_bounds.Width() + _borderWidth + _borderWidth);
-            var newScaleY = _bounds.Height()
-                            / (_bounds.Height() + _borderWidth + _borderWidth);
-
-            canvas.Scale(newScaleX, newScaleY);
-
-            if (ImageView.ScaleType.FitStart == _scaleType ||
-                ImageView.ScaleType.FitEnd == _scaleType ||
-                ImageView.ScaleType.FitXy == _scaleType ||
-                ImageView.ScaleType.FitCenter == _scaleType ||
-                ImageView.ScaleType.CenterInside == _scaleType ||
-                ImageView.ScaleType.Matrix == _scaleType)
-            {
-                canvas.Translate(_borderWidth, _borderWidth);
-            }
-            else if (ImageView.ScaleType.Center == _scaleType ||
-                     ImageView.ScaleType.CenterCrop == _scaleType)
-            {
-                // First, make translate values to 0
-                canvas.Translate(-translateX / (newScaleX * scaleFactorX), -translateY / (newScaleY * scaleFactorY));
-
-                // Then, set the final translate values.
-                canvas.Translate(-(_bounds.Left - _borderWidth), -(_bounds.Top - _borderWidth));
-            }
-        }
-
-        private void AdjustBorderWidthAndBorderBounds(Canvas canvas)
-        {
-            var canvasMatrix = canvas.Matrix;
-            var values = new float[9];
-            canvasMatrix.GetValues(values);
-
-            var scaleFactor = values[0];
-
-            var viewWidth = _bounds.Width() * scaleFactor;
-            _borderWidth = (_borderWidth * _bounds.Width()) / (viewWidth - (2 * _borderWidth));
-            _borderPaint.StrokeWidth = _borderWidth;
-
-            _borderBounds.Set(_bounds);
-            _borderBounds.Inset(-_borderWidth / 2, -_borderWidth / 2);
-        }
-
-        private void SetBorderRadii()
-        {
-            for (var i = 0; i < _radii.Length; i++)
-            {
-                if (_radii[i] > 0)
-                {
-                    _borderRadii[i] = _radii[i];
-                    _radii[i] = _radii[i] - _borderWidth;
-                }
-            }
-        }
-
         public override void Draw(Canvas canvas)
         {
             canvas.Save();
@@ -315,7 +112,273 @@ namespace Library
             }
             canvas.Restore();
         }
+        public override int Opacity =>
+            (int)(_bitmap == null || _bitmap.HasAlpha || _bitmapPaint.Alpha < 255 ? Format.Translucent : Format.Opaque);
+        public override void SetAlpha(int alpha)
+        {
+            _bitmapPaint.Alpha = alpha;
+            InvalidateSelf();
+        }
+        public override void SetColorFilter(ColorFilter cf)
+        {
+            _bitmapPaint.SetColorFilter(cf);
+            InvalidateSelf();
+        }
+        public override void SetDither(bool dither)
+        {
+            _bitmapPaint.Dither = dither;
+            InvalidateSelf();
+        }
+        public override void SetFilterBitmap(bool filter)
+        {
+            _bitmapPaint.FilterBitmap = filter;
+            InvalidateSelf();
+        }
+        public override int IntrinsicWidth => _bitmapWidth;
+        public override int IntrinsicHeight => _bitmapHeight;
 
+        #endregion
+
+        #region Private Functions
+
+        private SelectableRoundedCornerDrawable(Bitmap bitmap, Resources r)
+        {
+            _bitmap = bitmap;
+            _bitmapShader = new BitmapShader(bitmap, Shader.TileMode.Clamp, Shader.TileMode.Clamp);
+
+            if (bitmap != null)
+            {
+                _bitmapWidth = bitmap.GetScaledWidth(r.DisplayMetrics);
+                _bitmapHeight = bitmap.GetScaledHeight(r.DisplayMetrics);
+            }
+            else
+            {
+                _bitmapWidth = _bitmapHeight = -1;
+            }
+
+            _bitmapRect.Set(0, 0, _bitmapWidth, _bitmapHeight);
+
+            _bitmapPaint = new Paint { AntiAlias = true };
+            _bitmapPaint.SetStyle(Paint.Style.Fill);
+            _bitmapPaint.SetShader(_bitmapShader);
+
+            _borderPaint = new Paint { AntiAlias = true };
+            _borderPaint.SetStyle(Paint.Style.Stroke);
+            _borderPaint.Color = new Color(_borderColor.GetColorForState(GetState(), DefaultBorderColor));
+            _borderPaint.StrokeWidth = _borderWidth;
+        }
+        private void ConfigureBounds(Canvas canvas)
+        {
+            // I have discovered a truly marvelous explanation of this,
+            // which this comment space is too narrow to contain. :)
+            // If you want to understand what's going on here,
+            // See http://www.joooooooooonhokim.com/?p=289
+            var clipBounds = canvas.ClipBounds;
+            var canvasMatrix = canvas.Matrix;
+
+            if (ImageView.ScaleType.Center == _scaleType)
+            {
+                _bounds.Set(clipBounds);
+            }
+            else if (ImageView.ScaleType.CenterCrop == _scaleType)
+            {
+                ApplyScaleToRadii(canvasMatrix);
+                _bounds.Set(clipBounds);
+            }
+            else if (ImageView.ScaleType.FitXy == _scaleType)
+            {
+                var m = new Matrix();
+                m.SetRectToRect(_bitmapRect, new RectF(clipBounds), Matrix.ScaleToFit.Fill);
+                _bitmapShader.SetLocalMatrix(m);
+                _bounds.Set(clipBounds);
+            }
+            else if (ImageView.ScaleType.FitStart == _scaleType ||
+                     ImageView.ScaleType.FitEnd == _scaleType ||
+                     ImageView.ScaleType.FitCenter == _scaleType ||
+                     ImageView.ScaleType.CenterInside == _scaleType)
+            {
+                ApplyScaleToRadii(canvasMatrix);
+                _bounds.Set(_bitmapRect);
+            }
+            else if (ImageView.ScaleType.Matrix == _scaleType)
+            {
+                ApplyScaleToRadii(canvasMatrix);
+                _bounds.Set(_bitmapRect);
+            }
+        }
+        private void ApplyScaleToRadii(Matrix m)
+        {
+            var values = new float[9];
+            m.GetValues(values);
+            for (var i = 0; i < _radii.Length; i++)
+            {
+                _radii[i] = _radii[i] / values[0];
+            }
+        }
+        private void AdjustCanvasForBorder(Canvas canvas)
+        {
+            var canvasMatrix = canvas.Matrix;
+            var values = new float[9];
+            canvasMatrix.GetValues(values);
+
+            var scaleFactorX = values[0];
+            var scaleFactorY = values[4];
+            var translateX = values[2];
+            var translateY = values[5];
+
+            var newScaleX = _bounds.Width()
+                            / (_bounds.Width() + _borderWidth + _borderWidth);
+            var newScaleY = _bounds.Height()
+                            / (_bounds.Height() + _borderWidth + _borderWidth);
+
+            canvas.Scale(newScaleX, newScaleY);
+
+            if (ImageView.ScaleType.FitStart == _scaleType ||
+                ImageView.ScaleType.FitEnd == _scaleType ||
+                ImageView.ScaleType.FitXy == _scaleType ||
+                ImageView.ScaleType.FitCenter == _scaleType ||
+                ImageView.ScaleType.CenterInside == _scaleType ||
+                ImageView.ScaleType.Matrix == _scaleType)
+            {
+                canvas.Translate(_borderWidth, _borderWidth);
+            }
+            else if (ImageView.ScaleType.Center == _scaleType ||
+                     ImageView.ScaleType.CenterCrop == _scaleType)
+            {
+                // First, make translate values to 0
+                canvas.Translate(-translateX / (newScaleX * scaleFactorX), -translateY / (newScaleY * scaleFactorY));
+
+                // Then, set the final translate values.
+                canvas.Translate(-(_bounds.Left - _borderWidth), -(_bounds.Top - _borderWidth));
+            }
+        }
+        private void AdjustBorderWidthAndBorderBounds(Canvas canvas)
+        {
+            var canvasMatrix = canvas.Matrix;
+            var values = new float[9];
+            canvasMatrix.GetValues(values);
+
+            var scaleFactor = values[0];
+
+            var viewWidth = _bounds.Width() * scaleFactor;
+            _borderWidth = (_borderWidth * _bounds.Width()) / (viewWidth - (2 * _borderWidth));
+            _borderPaint.StrokeWidth = _borderWidth;
+
+            _borderBounds.Set(_bounds);
+            _borderBounds.Inset(-_borderWidth / 2, -_borderWidth / 2);
+        }
+        private void SetBorderRadii()
+        {
+            for (var i = 0; i < _radii.Length; i++)
+            {
+                if (_radii[i] > 0)
+                {
+                    _borderRadii[i] = _radii[i];
+                    _radii[i] = _radii[i] - _borderWidth;
+                }
+            }
+        }
+        private float GetBorderWidth()
+        {
+            return _borderWidth;
+        }
+        private int GetBorderColor()
+        {
+            return _borderColor.DefaultColor;
+        }
+        private void SetBorderColor(int color)
+        {
+            SetBorderColor(ColorStateList.ValueOf(new Color(color)));
+        }
+        private ColorStateList GetBorderColors()
+        {
+            return _borderColor;
+        }
+        private bool IsOval()
+        {
+            return _oval;
+        }
+        private ImageView.ScaleType GetScaleType()
+        {
+            return _scaleType;
+        }
+        private static Bitmap DrawableToBitmap(Drawable drawable)
+        {
+            if (drawable == null)
+            {
+                return null;
+            }
+
+            if (drawable is BitmapDrawable bitmapDrawable)
+            {
+                return bitmapDrawable.Bitmap;
+            }
+
+            Bitmap bitmap;
+            var width = Math.Max(drawable.IntrinsicWidth, 2);
+            var height = Math.Max(drawable.IntrinsicHeight, 2);
+            try
+            {
+                bitmap = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
+                var canvas = new Canvas(bitmap);
+                drawable.SetBounds(0, 0, canvas.Width, canvas.Height);
+                drawable.Draw(canvas);
+            }
+            catch (IllegalArgumentException e)
+            {
+                e.PrintStackTrace();
+                bitmap = null;
+            }
+            return bitmap;
+        }
+
+        #endregion
+
+        #region Public functions
+
+        public static SelectableRoundedCornerDrawable FromBitmap(Bitmap bitmap, Resources r)
+        {
+            return bitmap != null ? new SelectableRoundedCornerDrawable(bitmap, r) : null;
+        }
+
+        public static Drawable FromDrawable(Drawable drawable, Resources r)
+        {
+            if (drawable == null) return null;
+
+            if (drawable is SelectableRoundedCornerDrawable)
+            {
+                return drawable;
+            }
+
+            if (drawable is LayerDrawable ld)
+            {
+                var num = ld.NumberOfLayers;
+                for (var i = 0; i < num; i++)
+                {
+                    var d = ld.GetDrawable(i);
+                    ld.SetDrawableByLayerId(ld.GetId(i), FromDrawable(d, r));
+                }
+                return ld;
+            }
+
+            var bm = DrawableToBitmap(drawable);
+            if (bm != null)
+            {
+                return new SelectableRoundedCornerDrawable(bm, r);
+            }
+
+            Log.Warn(Tag, "Failed to create bitmap from drawable!");
+            return drawable;
+        }
+
+        public void SetScaleType(ImageView.ScaleType scaleType)
+        {
+            if (scaleType == null)
+            {
+                return;
+            }
+            _scaleType = scaleType;
+        }
         public void SetCornerRadii(float[] radii)
         {
             if (radii == null)
@@ -332,73 +395,16 @@ namespace Library
             }
         }
 
-        public override int Opacity =>
-            (int)(_bitmap == null || _bitmap.HasAlpha || _bitmapPaint.Alpha < 255 ? Format.Translucent : Format.Opaque);
-
-        public override void SetAlpha(int alpha)
-        {
-            _bitmapPaint.Alpha = alpha;
-            InvalidateSelf();
-        }
-
-        public override void SetColorFilter(ColorFilter cf)
-        {
-            _bitmapPaint.SetColorFilter(cf);
-            InvalidateSelf();
-        }
-
-        public override void SetDither(bool dither)
-        {
-            _bitmapPaint.Dither = dither;
-            InvalidateSelf();
-        }
-
-        public override void SetFilterBitmap(bool filter)
-        {
-            _bitmapPaint.FilterBitmap = filter;
-            InvalidateSelf();
-        }
-
-
-        public override int IntrinsicWidth => _bitmapWidth;
-
-        public override int IntrinsicHeight => _bitmapHeight;
-
-
-        public float GetBorderWidth()
-        {
-            return _borderWidth;
-        }
-
         public void SetBorderWidth(float width)
         {
             _borderWidth = width;
             _borderPaint.StrokeWidth = width;
         }
 
-        public int GetBorderColor()
-        {
-            return _borderColor.DefaultColor;
-        }
-
-        public void SetBorderColor(int color)
-        {
-            SetBorderColor(ColorStateList.ValueOf(new Color(color)));
-        }
-
-        public ColorStateList GetBorderColors()
-        {
-            return _borderColor;
-        }
-
-        /**
-     * Controls border color of this ImageView.
-     * 
-     * @param colors
-     *            The desired border color. If it's null, no border will be
-     *            drawn.
-     * 
-     */
+        /// <summary>
+        /// Controls border color of this ImageView. 
+        /// </summary>
+        /// <param name="colors">The desired border color.If it's null, no border will be drawn.</param>
         public void SetBorderColor(ColorStateList colors)
         {
             if (colors == null)
@@ -414,28 +420,11 @@ namespace Library
             }
         }
 
-        public bool IsOval()
-        {
-            return _oval;
-        }
-
         public void SetOval(bool oval)
         {
             _oval = oval;
         }
 
-        public ImageView.ScaleType GetScaleType()
-        {
-            return _scaleType;
-        }
-
-        public void SetScaleType(ImageView.ScaleType scaleType)
-        {
-            if (scaleType == null)
-            {
-                return;
-            }
-            _scaleType = scaleType;
-        }
+        #endregion
     }
 }

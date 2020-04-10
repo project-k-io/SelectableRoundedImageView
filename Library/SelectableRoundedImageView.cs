@@ -1,11 +1,13 @@
+using System;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.Net;
+using Android.Runtime;
 using Android.Util;
 using Android.Widget;
 using Java.Lang;
+using Uri = Android.Net.Uri;
 
 namespace Library
 {
@@ -36,7 +38,7 @@ namespace Library
 
         // Set default scale type to FIT_CENTER, which is default scale type of
         // original ImageView.
-        private readonly ScaleType _mScaleType = ScaleType.FitCenter;
+        private ScaleType _mScaleType = ScaleType.FitCenter;
 
         private readonly float _leftTopCornerRadius;
 
@@ -51,6 +53,7 @@ namespace Library
         #endregion
 
         #region Constructors
+
 
         public SelectableRoundedImageView(Context context) : base(context)
         {
@@ -106,6 +109,10 @@ namespace Library
             UpdateDrawable();
         }
 
+        public SelectableRoundedImageView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+        {
+        }
+
 
         #endregion
 
@@ -122,23 +129,19 @@ namespace Library
             return _mScaleType;
         }
 
-#if AK
         public override void SetScaleType(ScaleType scaleType)
         {
             base.SetScaleType(scaleType);
             _mScaleType = scaleType;
             UpdateDrawable();
     }
-#endif
 
-#if AK
         public override void SetImageDrawable(Drawable drawable)
         {
             _mDrawable = SelectableRoundedCornerDrawable.FromDrawable(drawable, Resources);
             base.SetImageDrawable(drawable);
             UpdateDrawable();
     }
-#endif
 
         public override void SetImageBitmap(Bitmap bm)
         {
@@ -306,5 +309,6 @@ namespace Library
         }
 
         #endregion
+
     }
 }

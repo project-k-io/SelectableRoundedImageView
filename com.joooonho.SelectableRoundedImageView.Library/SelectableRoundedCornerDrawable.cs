@@ -5,7 +5,7 @@ using Android.Util;
 using Android.Widget;
 using Java.Lang;
 
-namespace Library
+namespace com.joooonho
 {
     public sealed class SelectableRoundedCornerDrawable : Drawable
     {
@@ -46,100 +46,7 @@ namespace Library
 
         #endregion
 
-        #region Overrides
-
-        public override bool IsStateful => _borderColor.IsStateful;
-        protected override bool OnStateChange(int[] state)
-        {
-            var newColor = _borderColor.GetColorForState(state, new Color(0));
-            if (_borderPaint.Color != newColor)
-            {
-                _borderPaint.Color = new Color(newColor);
-                return true;
-            }
-            else
-            {
-                return base.OnStateChange(state);
-            }
-        }
-        public override void Draw(Canvas canvas)
-        {
-            canvas.Save();
-            if (!_boundsConfigured)
-            {
-                ConfigureBounds(canvas);
-                if (_borderWidth > 0)
-                {
-                    AdjustBorderWidthAndBorderBounds(canvas);
-                    SetBorderRadii();
-                }
-                _boundsConfigured = true;
-            }
-
-            if (_oval)
-            {
-                if (_borderWidth > 0)
-                {
-                    AdjustCanvasForBorder(canvas);
-                    _path.AddOval(_bounds, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _bitmapPaint);
-                    _path.Reset();
-                    _path.AddOval(_borderBounds, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _borderPaint);
-                }
-                else
-                {
-                    _path.AddOval(_bounds, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _bitmapPaint);
-                }
-            }
-            else
-            {
-                if (_borderWidth > 0)
-                {
-                    AdjustCanvasForBorder(canvas);
-                    _path.AddRoundRect(_bounds, _radii, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _bitmapPaint);
-                    _path.Reset();
-                    _path.AddRoundRect(_borderBounds, _borderRadii, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _borderPaint);
-                }
-                else
-                {
-                    _path.AddRoundRect(_bounds, _radii, Path.Direction.Cw);
-                    canvas.DrawPath(_path, _bitmapPaint);
-                }
-            }
-            canvas.Restore();
-        }
-        public override int Opacity =>
-            (int)(_bitmap == null || _bitmap.HasAlpha || _bitmapPaint.Alpha < 255 ? Format.Translucent : Format.Opaque);
-        public override void SetAlpha(int alpha)
-        {
-            _bitmapPaint.Alpha = alpha;
-            InvalidateSelf();
-        }
-        public override void SetColorFilter(ColorFilter cf)
-        {
-            _bitmapPaint.SetColorFilter(cf);
-            InvalidateSelf();
-        }
-        public override void SetDither(bool dither)
-        {
-            _bitmapPaint.Dither = dither;
-            InvalidateSelf();
-        }
-        public override void SetFilterBitmap(bool filter)
-        {
-            _bitmapPaint.FilterBitmap = filter;
-            InvalidateSelf();
-        }
-        public override int IntrinsicWidth => _bitmapWidth;
-        public override int IntrinsicHeight => _bitmapHeight;
-
-        #endregion
-
-        #region Private Functions
+        #region Constructor
 
         private SelectableRoundedCornerDrawable(Bitmap bitmap, Resources r)
         {
@@ -167,6 +74,12 @@ namespace Library
             _borderPaint.Color = new Color(_borderColor.GetColorForState(GetState(), DefaultBorderColor));
             _borderPaint.StrokeWidth = _borderWidth;
         }
+
+
+        #endregion
+
+        #region Private Functions
+
         private void ConfigureBounds(Canvas canvas)
         {
             // I have discovered a truly marvelous explanation of this,
@@ -331,6 +244,99 @@ namespace Library
             }
             return bitmap;
         }
+
+        #endregion
+
+        #region Overrides
+
+        public override bool IsStateful => _borderColor.IsStateful;
+        protected override bool OnStateChange(int[] state)
+        {
+            var newColor = _borderColor.GetColorForState(state, new Color(0));
+            if (_borderPaint.Color != newColor)
+            {
+                _borderPaint.Color = new Color(newColor);
+                return true;
+            }
+            else
+            {
+                return base.OnStateChange(state);
+            }
+        }
+        public override void Draw(Canvas canvas)
+        {
+            canvas.Save();
+            if (!_boundsConfigured)
+            {
+                ConfigureBounds(canvas);
+                if (_borderWidth > 0)
+                {
+                    AdjustBorderWidthAndBorderBounds(canvas);
+                    SetBorderRadii();
+                }
+                _boundsConfigured = true;
+            }
+
+            if (_oval)
+            {
+                if (_borderWidth > 0)
+                {
+                    AdjustCanvasForBorder(canvas);
+                    _path.AddOval(_bounds, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _bitmapPaint);
+                    _path.Reset();
+                    _path.AddOval(_borderBounds, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _borderPaint);
+                }
+                else
+                {
+                    _path.AddOval(_bounds, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _bitmapPaint);
+                }
+            }
+            else
+            {
+                if (_borderWidth > 0)
+                {
+                    AdjustCanvasForBorder(canvas);
+                    _path.AddRoundRect(_bounds, _radii, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _bitmapPaint);
+                    _path.Reset();
+                    _path.AddRoundRect(_borderBounds, _borderRadii, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _borderPaint);
+                }
+                else
+                {
+                    _path.AddRoundRect(_bounds, _radii, Path.Direction.Cw);
+                    canvas.DrawPath(_path, _bitmapPaint);
+                }
+            }
+            canvas.Restore();
+        }
+        public override int Opacity =>
+            (int)(_bitmap == null || _bitmap.HasAlpha || _bitmapPaint.Alpha < 255 ? Format.Translucent : Format.Opaque);
+        public override void SetAlpha(int alpha)
+        {
+            _bitmapPaint.Alpha = alpha;
+            InvalidateSelf();
+        }
+        public override void SetColorFilter(ColorFilter cf)
+        {
+            _bitmapPaint.SetColorFilter(cf);
+            InvalidateSelf();
+        }
+        public override void SetDither(bool dither)
+        {
+            _bitmapPaint.Dither = dither;
+            InvalidateSelf();
+        }
+        public override void SetFilterBitmap(bool filter)
+        {
+            _bitmapPaint.FilterBitmap = filter;
+            InvalidateSelf();
+        }
+        public override int IntrinsicWidth => _bitmapWidth;
+        public override int IntrinsicHeight => _bitmapHeight;
 
         #endregion
 

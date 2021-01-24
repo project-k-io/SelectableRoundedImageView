@@ -1,19 +1,21 @@
+using System;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.Net;
+using Android.Runtime;
 using Android.Util;
 using Android.Widget;
 using Java.Lang;
+using Uri = Android.Net.Uri;
 
-namespace Library
+namespace com.joooonho
 {
     public sealed class SelectableRoundedImageView : ImageView
     {
-        public static string TAG = "SelectableRoundedImageView";
+        #region Static Fields
 
-        private int _mResource;
+        public static string TAG = "SelectableRoundedImageView";
 
         private static readonly ScaleType[] SScaleTypeArray =
         {
@@ -27,6 +29,13 @@ namespace Library
             ScaleType.CenterInside
         };
 
+
+        #endregion
+
+        #region Fields
+
+        private int _mResource;
+
         // Set default scale type to FIT_CENTER, which is default scale type of
         // original ImageView.
         private ScaleType _mScaleType = ScaleType.FitCenter;
@@ -39,7 +48,12 @@ namespace Library
 
         private bool _isOval;
         private Drawable _mDrawable;
-        private float[] _mRadii = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        private float[] _mRadii = {0, 0, 0, 0, 0, 0, 0, 0};
+
+        #endregion
+
+        #region Constructors
+
 
         public SelectableRoundedImageView(Context context) : base(context)
         {
@@ -95,6 +109,15 @@ namespace Library
             UpdateDrawable();
         }
 
+        public SelectableRoundedImageView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+        {
+        }
+
+
+        #endregion
+
+        #region Overrides
+
         protected override void DrawableStateChanged()
         {
             base.DrawableStateChanged();
@@ -106,23 +129,19 @@ namespace Library
             return _mScaleType;
         }
 
-#if AK
         public override void SetScaleType(ScaleType scaleType)
         {
             base.SetScaleType(scaleType);
             _mScaleType = scaleType;
             UpdateDrawable();
     }
-#endif
 
-#if AK
         public override void SetImageDrawable(Drawable drawable)
         {
             _mDrawable = SelectableRoundedCornerDrawable.FromDrawable(drawable, Resources);
             base.SetImageDrawable(drawable);
             UpdateDrawable();
     }
-#endif
 
         public override void SetImageBitmap(Bitmap bm)
         {
@@ -148,6 +167,10 @@ namespace Library
             base.SetImageURI(uri);
             SetImageDrawable(Drawable);
         }
+
+        #endregion
+
+        #region Private Functions
 
         private Drawable ResolveResource()
         {
@@ -183,52 +206,28 @@ namespace Library
                 return;
             }
 
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetScaleType(_mScaleType);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetCornerRadii(_mRadii);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderWidth(_mBorderWidth);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetBorderColor(_mBorderColor);
-            ((SelectableRoundedCornerDrawable)_mDrawable).SetOval(_isOval);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetScaleType(_mScaleType);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetCornerRadii(_mRadii);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderWidth(_mBorderWidth);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetBorderColor(_mBorderColor);
+            ((SelectableRoundedCornerDrawable) _mDrawable).SetOval(_isOval);
         }
 
-        public float GetCornerRadius()
+        private float GetCornerRadius()
         {
             return _leftTopCornerRadius;
         }
 
-        /**
-     * Set radii for each corner.
-     * 
-     * @param leftTop The desired radius for left-top corner in dip.
-     * @param rightTop The desired desired radius for right-top corner in dip.
-     * @param leftBottom The desired radius for left-bottom corner in dip.
-     * @param rightBottom The desired radius for right-bottom corner in dip.
-     * 
-     */
-        public void SetCornerRadiiDp(float leftTop, float rightTop, float leftBottom, float rightBottom)
-        {
-            var density = Resources.DisplayMetrics.Density;
-
-            var lt = leftTop * density;
-            var rt = rightTop * density;
-            var lb = leftBottom * density;
-            var rb = rightBottom * density;
-
-            _mRadii = new float[] { lt, lt, rt, rt, rb, rb, lb, lb };
-            UpdateDrawable();
-        }
-
-        public float GetBorderWidth()
+        private float GetBorderWidth()
         {
             return _mBorderWidth;
         }
 
-        /**
-     * Set border width.
-     * 
-     * @param width
-     *            The desired width in dip.
-     */
-        public void SetBorderWidthDp(float width)
+        /// <summary>
+        /// Set border width.
+        /// </summary>
+        /// <param name="width">The desired width in dip.</param>
+        private void SetBorderWidthDp(float width)
         {
             var scaledWidth = Resources.DisplayMetrics.Density * width;
             if (_mBorderWidth == scaledWidth)
@@ -241,22 +240,22 @@ namespace Library
             Invalidate();
         }
 
-        public int GetBorderColor()
+        private int GetBorderColor()
         {
             return _mBorderColor.DefaultColor;
         }
 
-        public void SetBorderColor(int color)
+        private void SetBorderColor(int color)
         {
             SetBorderColor(ColorStateList.ValueOf(new Color(color)));
         }
 
-        public ColorStateList GetBorderColors()
+        private ColorStateList GetBorderColors()
         {
             return _mBorderColor;
         }
 
-        public void SetBorderColor(ColorStateList colors)
+        private void SetBorderColor(ColorStateList colors)
         {
             if (_mBorderColor.Equals(colors))
             {
@@ -274,9 +273,32 @@ namespace Library
             }
         }
 
-        public bool IsOval()
+        private bool IsOval()
         {
             return _isOval;
+        }
+
+        #endregion
+
+        #region Public Functions
+        /// <summary>
+        /// set radii for each corner
+        /// </summary>
+        /// <param name="leftTop">The desired radius for left-top corner in dip.</param>
+        /// <param name="rightTop">The desired desired radius for right-top corner in dip</param>
+        /// <param name="leftBottom">Left bottom the desired radius for left-bottom corner in dip</param>
+        /// <param name="rightBottom">Right bottom the desired radius for right-bottom corner in dip</param>
+        public void SetCornerRadiiDp(float leftTop, float rightTop, float leftBottom, float rightBottom)
+        {
+            var density = Resources.DisplayMetrics.Density;
+
+            var lt = leftTop * density;
+            var rt = rightTop * density;
+            var lb = leftBottom * density;
+            var rb = rightBottom * density;
+
+            _mRadii = new float[] { lt, lt, rt, rt, rb, rb, lb, lb };
+            UpdateDrawable();
         }
 
         public void SetOval(bool oval)
@@ -285,5 +307,8 @@ namespace Library
             UpdateDrawable();
             Invalidate();
         }
+
+        #endregion
+
     }
 }

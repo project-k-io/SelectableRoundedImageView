@@ -124,7 +124,7 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Library.csproj">
+    <ProjectReference Include="..\com.joooonho.SelectableRoundedImageView.Library\com.joooonho.SelectableRoundedImageView.Library.csproj">
       <Project>{3c411c9a-f164-4c37-8ed7-0a8581afeb6b}</Project>
       <Name>Library</Name>
     </ProjectReference>

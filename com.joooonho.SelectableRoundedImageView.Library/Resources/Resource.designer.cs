@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Library.Resource", IsApplication=false)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("com.joooonho.Resource", IsApplication=false)]
 
-namespace Library
+namespace com.joooonho
 {
 	
 	

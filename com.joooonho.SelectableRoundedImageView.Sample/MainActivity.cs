@@ -3,10 +3,9 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.V7.App;
 using Android.Widget;
-using Library;
 using Square.Picasso;
 
-namespace Sample
+namespace com.joooonho.Sample
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
@@ -36,7 +35,7 @@ namespace Sample
             // Of course, you can set round radius in code.
             var iv3 = FindViewById<SelectableRoundedImageView>(Resource.Id.image3);
             iv3.SetImageDrawable(Resources.GetDrawable(Resource.Drawable.photo3));
-            ((Library.SelectableRoundedImageView)iv3).SetCornerRadiiDp(4, 4, 0, 0);
+            ((SelectableRoundedImageView)iv3).SetCornerRadiiDp(4, 4, 0, 0);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

@@ -12,7 +12,7 @@
         android:gravity="center_horizontal"
         android:padding="16dp" >
         
-        <Library.SelectableRoundedImageView
+        <com.joooonho.SelectableRoundedImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/image0"
             android:layout_width="match_parent"
@@ -24,7 +24,7 @@
             app:sriv_left_bottom_corner_radius="48dip"
             app:sriv_right_bottom_corner_radius="16dip" />
 
-        <Library.SelectableRoundedImageView
+        <com.joooonho.SelectableRoundedImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/image1"
             android:layout_width="240dp"
@@ -33,14 +33,14 @@
             app:sriv_border_color="#000000"
             app:sriv_border_width="4dip" />
 
-        <Library.SelectableRoundedImageView
+        <com.joooonho.SelectableRoundedImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/image2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp" />
 
-        <Library.SelectableRoundedImageView
+        <com.joooonho.SelectableRoundedImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/image3"
             android:layout_width="match_parent"

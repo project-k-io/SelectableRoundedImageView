@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("com.joooonho.Resource", IsApplication=false)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("ProjectK.Imaging.Resource", IsApplication=false)]
 
-namespace com.joooonho
+namespace ProjectK.Imaging
 {
 	
 	

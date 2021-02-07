@@ -5,7 +5,7 @@ using Android.Util;
 using Android.Widget;
 using Java.Lang;
 
-namespace com.joooonho
+namespace ProjectK.Imaging
 {
     public sealed class SelectableRoundedCornerDrawable : Drawable
     {

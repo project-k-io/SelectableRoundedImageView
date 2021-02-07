@@ -9,7 +9,7 @@ using Android.Widget;
 using Java.Lang;
 using Uri = Android.Net.Uri;
 
-namespace com.joooonho
+namespace ProjectK.Imaging
 {
     public sealed class SelectableRoundedImageView : ImageView
     {

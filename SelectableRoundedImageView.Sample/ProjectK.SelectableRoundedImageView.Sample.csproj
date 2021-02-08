@@ -10,8 +10,8 @@
     <TemplateGuid>{122416d6-6b49-4ee2-a1e8-b825f31c79fe}</TemplateGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.joooonho.Sample</RootNamespace>
-    <AssemblyName>com.joooonho.SelectableRoundedImageView.Sample</AssemblyName>
+    <RootNamespace>com.joooonho.sample</RootNamespace>
+    <AssemblyName>ProjectK.SelectableRoundedImageView.Sample</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <Deterministic>True</Deterministic>
     <AndroidApplication>True</AndroidApplication>
@@ -19,7 +19,7 @@
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
@@ -124,9 +124,9 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_launcher.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\com.joooonho.SelectableRoundedImageView.Library\com.joooonho.SelectableRoundedImageView.Library.csproj">
+    <ProjectReference Include="..\SelectableRoundedImageView.Library\ProjectK.SelectableRoundedImageView.Library.csproj">
       <Project>{3c411c9a-f164-4c37-8ed7-0a8581afeb6b}</Project>
-      <Name>Library</Name>
+      <Name>ProjectK.SelectableRoundedImageView.Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

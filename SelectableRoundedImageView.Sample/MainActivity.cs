@@ -5,7 +5,7 @@ using Android.Support.V7.App;
 using Android.Widget;
 using Square.Picasso;
 
-namespace com.joooonho.Sample
+namespace com.joooonho.sample
 {
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
